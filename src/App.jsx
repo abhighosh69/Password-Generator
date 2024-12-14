@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./index.css";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
 const App = () => {
   const [password, setPassword] = useState("");
   const [numberAllow, setNumberAllow] = useState(false);
   const [specialCharAllow, setSpecialCharAllow] = useState(false);
   const [passLength, setPassLength] = useState(8);
+  const [showAlert, setShowAlert] = useState(false);
 
   const generateRandomPassword = (passLength) => {
     let char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -28,12 +31,14 @@ const App = () => {
     setPassword(pass);
   };
 
-  
   const copyToClipBoard = useCallback(() => {
-    navigator.clipboard.writeText(password)
-    .then(() => {
-      alert("Password copied to clipboard");
-  })},[password])
+    navigator.clipboard.writeText(password).then(() => {
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 2000);
+    });
+  }, [password]);
 
   // Generate an initial password on component mount
   useEffect(() => {
@@ -46,11 +51,24 @@ const App = () => {
         Generate Password
       </h1>
       <div className="flex shadow rounded-lg overflow-hidden ml-10 mb-10">
-        <input type="text" value={password} readOnly className="rounded-lg mr-2 px-9 py-1" />
-        <button onClick={copyToClipBoard} className="outline-none bg-blue-700 text-white px-4 py-1 shrink-0 rounded-lg font-bold">
+        <input
+          type="text"
+          value={password}
+          readOnly
+          className="rounded-lg mr-2 px-9 py-1"
+        />
+        <button
+          onClick={copyToClipBoard}
+          className="outline-none bg-blue-700 text-white px-4 py-1 shrink-0 rounded-lg font-bold"
+        >
           Copy
         </button>
       </div>
+      {showAlert && (
+        <Stack sx={{ width: "100%" }} spacing={2}>
+          <Alert severity="success">Your Password is Copied</Alert>
+        </Stack>
+      )}
       <div className="flex text-sm gap-x-2">
         <div className="flex items-center gap-x-1">
           <input
@@ -85,7 +103,7 @@ const App = () => {
       </div>
       <div>
         <button
-        className="outline-offset-0 bg-blue-700 text-orange-500 font-bold px-4 py-0.1 shrink-0 rounded-lg"
+          className="outline-none bg-blue-700 text-orange-500 font-bold px-4 py-0.1 shrink-0 rounded-lg"
           onClick={() => {
             generateRandomPassword(passLength);
           }}
